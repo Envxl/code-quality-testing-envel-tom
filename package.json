@@ -9,9 +9,21 @@
         "start": "concurrently \"npm run start --workspace=backend\" \"npm run start --workspace=frontend\"",
         "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run start --workspace=frontend\"",
         "test": "npm run test --workspaces --if-present",
-        "lint": "npm run lint --workspaces --if-present"
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
     },
     "devDependencies": {
-        "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-jsx-a11y": "^6.10.2",
+        "eslint-plugin-n": "^18.3.0",
+        "eslint-plugin-perfectionist": "^5.11.1",
+        "eslint-plugin-react": "^7.37.5",
+        "eslint-plugin-react-hooks": "^7.1.1",
+        "eslint-plugin-unicorn": "^75.0.0",
+        "prettier": "^3.9.7"
     }
 }
