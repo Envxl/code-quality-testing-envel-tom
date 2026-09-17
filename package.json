@@ -12,6 +12,7 @@
         "lint": "npm run lint --workspaces --if-present"
     },
     "devDependencies": {
-        "concurrently": "^8.2.2"
+        "concurrently": "^8.2.2",
+        "prettier": "^3.9.7"
     }
 }
