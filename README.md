@@ -48,12 +48,12 @@ chore: update eslint configuration
 ## Main Requirements
 
 ### 1. Code Quality Tools Implementation
-- [ ] Install and configure Prettier with the following requirements:
+- [X] Install and configure Prettier with the following requirements:
   - Single quotes
   - No trailing commas
   - 2 spaces indentation
   - 120 characters line length
-- [ ] Install and configure ESLint:
+- [X] Install and configure ESLint:
   - Frontend:
     - Add `eslint-plugin-react` plugin for base React features
     - Add `eslint-plugin-react-hooks` plugin for React hooks best practices
