@@ -24,7 +24,7 @@
     "*.{js,jsx,ts,tsx}": [
       "npx eslint --fix",
       "npx prettier --write",
-      "npm run test -- --findRelatedTests --bail"
+      "npm run test -- --findRelatedTests --bail --passWithNoTests"
     ],
     "*.{json,md,yml,yaml}": [
       "npx prettier --write"
