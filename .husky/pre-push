@@ -1,1 +1,1 @@
-npm run test -- --coverage --watchAll=false
+CI=true npm run test -- --coverage --watchAll=false
