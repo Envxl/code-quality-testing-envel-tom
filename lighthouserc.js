@@ -1,8 +1,8 @@
 module.exports = {
   ci: {
     collect: {
-      startServerCommand: 'npm run start',
-      startServerReadyPattern: 'ready',
+      startServerCommand: 'npm run start:lighthouse',
+      startServerReadyPattern: 'webpack compiled successfully',
       url: ['http://localhost:3000'],
       numberOfRuns: 3,
     },

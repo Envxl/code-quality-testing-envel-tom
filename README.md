@@ -96,9 +96,9 @@ Remember to make Prettier and ESLint work together!
   - Authentication middleware tests
 
 ### 4. Performance Analysis
-- [ ] Implement Google Lighthouse CI
-- [ ] Create npm script for running Lighthouse
-- [ ] Set minimum score thresholds:
+- [X] Implement Google Lighthouse CI
+- [X] Create npm script for running Lighthouse
+- [X] Set minimum score thresholds:
   - Performance: 80
   - Accessibility: 100
   - Best Practices: 90
