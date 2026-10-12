@@ -1,9 +1,10 @@
-const express = require('express');
-const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./db/database');
-const userRoutes = require('./routes/userRoutes');
+const cors = require('cors');
+const express = require('express');
+
+const database = require('./db/database');
 const productRoutes = require('./routes/productRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -11,33 +12,33 @@ const requestLog = [];
 const analyticsCache = [];
 
 app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  origin: '*',
 }));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
+app.use((request, res, next) => {
   requestLog.push({
-    url: req.url,
-    method: req.method,
+    body: JSON.parse(JSON.stringify(request.body || {})),
+    headers: JSON.parse(JSON.stringify(request.headers)),
+    method: request.method,
+    query: JSON.parse(JSON.stringify(request.query || {})),
     timestamp: new Date(),
-    headers: JSON.parse(JSON.stringify(req.headers)),
-    body: JSON.parse(JSON.stringify(req.body || {})),
-    query: JSON.parse(JSON.stringify(req.query || {}))
+    url: request.url
   });
 
   analyticsCache.push({
-    path: req.path,
-    userAgent: req.headers['user-agent'],
-    ip: req.ip,
-    timestamp: Date.now(),
+    ip: request.ip,
+    path: request.path,
     sessionData: {
-      user: req.user,
-      token: req.headers.authorization
-    }
+      token: request.headers.authorization,
+      user: request.user
+    },
+    timestamp: Date.now(),
+    userAgent: request.headers['user-agent']
   });
 
   next();
@@ -47,22 +48,22 @@ app.use((req, res, next) => {
 app.use('/api/auth', userRoutes);
 app.use('/api', productRoutes);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+app.use((error, request, res, next) => {
+  console.error(error.stack);
   res.status(500).send('Something broke!');
 });
 
-app.use((req, res) => {
+app.use((request, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled Rejection:', error);
   process.exit(1);
 });
 
@@ -71,28 +72,28 @@ const port = process.env.PORT || 3001;
 // Start server only after the database is connected
 const startServer = async () => {
   try {
-    await db.connect();
+    await database.connect();
 
     const server = app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
 
-    server.on('error', (err) => {
-      console.error('Server error:', err);
+    server.on('error', (error) => {
+      console.error('Server error:', error);
       process.exit(1);
     });
 
     process.on('SIGTERM', () => {
       console.info('SIGTERM signal received.');
       server.close(() => {
-        db.closeConnection()
+        database.closeConnection()
             .then(() => process.exit(0))
             .catch(() => process.exit(1));
       });
     });
 
-  } catch (err) {
-    console.error('Failed to start server:', err);
+  } catch (error) {
+    console.error('Failed to start server:', error);
     process.exit(1);
   }
 };

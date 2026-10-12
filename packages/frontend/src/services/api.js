@@ -5,8 +5,8 @@ const API_URL = 'http://localhost:3001/api';
 export const loginUser = async (username, password) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, {
-      username,
-      password
+      password,
+      username
     });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -39,20 +39,20 @@ export const getProducts = async () => {
     const products = response.data.data;
 
     const processedProducts = [];
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
+    for (let index = 0; index < products.length; index++) {
+      const product = products[index];
 
       let isCheapest = true;
-      for (let j = 0; j < products.length; j++) {
-        if (i !== j && products[j].price < product.price) {
+      for (const [index_, product_] of products.entries()) {
+        if (index !== index_ && product_.price < product.price) {
           isCheapest = false;
           break;
         }
       }
 
       let moreExpensiveCount = 0;
-      for (let j = 0; j < products.length; j++) {
-        if (products[j].price > product.price) {
+      for (const product_ of products) {
+        if (product_.price > product.price) {
           moreExpensiveCount++;
         }
       }
@@ -65,8 +65,8 @@ export const getProducts = async () => {
     }
 
     return processedProducts;
-  } catch (err) {
-    console.error('Error fetching products:', err);
+  } catch (error) {
+    console.error('Error fetching products:', error);
     return [];
   }
 };

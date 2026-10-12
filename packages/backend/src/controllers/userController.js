@@ -1,27 +1,28 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../db/database');
 
-exports.registerUser = (req, res) => {
-    const { username, password, firstname, lastname } = req.body;
+const database_ = require('../db/database');
+
+exports.registerUser = (request, res) => {
+    const { firstname, lastname, password, username } = request.body;
 
     const hashedPassword = bcrypt.hashSync(password, 8);
 
-    const database = db.getDb();
+    const database = database_.getDb();
 
     database.run(
         `INSERT INTO users (username, password, firstname, lastname) VALUES (?, ?, ?, ?)`,
         [username, hashedPassword, firstname, lastname],
-        function(err) {
-            if (err) {
-                console.error(err);
+        function(error) {
+            if (error) {
+                console.error(error);
                 return res.status(500).json({ error: 'Error creating user' });
             }
 
             const token = jwt.sign(
                 { id: this.lastID },
                 'your-super-secret-key-that-should-not-be-hardcoded',
-                { expiresIn: 86400 }
+                { expiresIn: 86_400 }
             );
 
             res.status(201).json({ auth: true, token });
@@ -29,16 +30,16 @@ exports.registerUser = (req, res) => {
     );
 };
 
-exports.loginUser = (req, res) => {
-    const { username, password } = req.body;
+exports.loginUser = (request, res) => {
+    const { password, username } = request.body;
 
-    const database = db.getDb();
+    const database = database_.getDb();
 
     database.get(
         `SELECT * FROM users WHERE username = ?`,
         [username],
-        (err, user) => {
-            if (err) return res.status(500).json({ error: 'Error on the server.' });
+        (error, user) => {
+            if (error) return res.status(500).json({ error: 'Error on the server.' });
             if (!user) return res.status(404).json({ error: 'No user found.' });
 
             const passwordIsValid = bcrypt.compareSync(password, user.password);
@@ -47,32 +48,32 @@ exports.loginUser = (req, res) => {
             const token = jwt.sign(
                 { id: user.id },
                 'your-super-secret-key-that-should-not-be-hardcoded',
-                { expiresIn: 86400 }
+                { expiresIn: 86_400 }
             );
 
             res.status(200).json({
                 auth: true,
                 token,
                 user: {
-                    id: user.id,
-                    username: user.username,
                     firstname: user.firstname,
-                    lastname: user.lastname
+                    id: user.id,
+                    lastname: user.lastname,
+                    username: user.username
                 }
             });
         }
     );
 };
 
-exports.getAllUsers = (req, res) => {
-    const database = db.getDb();
+exports.getAllUsers = (request, res) => {
+    const database = database_.getDb();
 
     database.all(
         `SELECT id, username, firstname, lastname, created_at FROM users`,
         [],
-        (err, users) => {
-            if (err) {
-                console.error(err);
+        (error, users) => {
+            if (error) {
+                console.error(error);
                 return res.status(500).json({ error: 'Error getting users' });
             }
             res.json(users);
@@ -80,18 +81,18 @@ exports.getAllUsers = (req, res) => {
     );
 };
 
-exports.findSimilarUsernames = (req, res) => {
-    const database = db.getDb();
+exports.findSimilarUsernames = (request, res) => {
+    const database = database_.getDb();
 
-    database.all('SELECT username FROM users', [], (err, users) => {
-        if (err) return res.status(500).json({ error: err.message });
+    database.all('SELECT username FROM users', [], (error, users) => {
+        if (error) return res.status(500).json({ error: error.message });
 
         const similar = [];
 
-        for (let i = 0; i < users.length; i++) {
-            for (let j = i + 1; j < users.length; j++) {
-                const username1 = users[i].username.toLowerCase();
-                const username2 = users[j].username.toLowerCase();
+        for (let index = 0; index < users.length; index++) {
+            for (let index_ = index + 1; index_ < users.length; index_++) {
+                const username1 = users[index].username.toLowerCase();
+                const username2 = users[index_].username.toLowerCase();
 
                 const matrix = [];
                 for (let x = 0; x <= username1.length; x++) {
@@ -103,21 +104,17 @@ exports.findSimilarUsernames = (req, res) => {
 
                 for (let x = 1; x <= username1.length; x++) {
                     for (let y = 1; y <= username2.length; y++) {
-                        if (username1.charAt(x - 1) === username2.charAt(y - 1)) {
-                            matrix[x][y] = matrix[x - 1][y - 1];
-                        } else {
-                            matrix[x][y] = Math.min(
+                        matrix[x][y] = username1.charAt(x - 1) === username2.charAt(y - 1) ? matrix[x - 1][y - 1] : Math.min(
                                 matrix[x - 1][y - 1] + 1,
                                 matrix[x][y - 1] + 1,
                                 matrix[x - 1][y] + 1
                             );
-                        }
                     }
                 }
 
                 const distance = matrix[username1.length][username2.length];
                 if (distance <= 2) {
-                    similar.push({ user1: users[i].username, user2: users[j].username, distance });
+                    similar.push({ distance, user1: users[index].username, user2: users[index_].username });
                 }
             }
         }
