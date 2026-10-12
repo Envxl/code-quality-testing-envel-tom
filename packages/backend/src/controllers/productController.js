@@ -1,7 +1,7 @@
-const db = require('../db/database');
+const database_ = require('../db/database');
 
-exports.getAllProducts = (req, res) => {
-    const database = db.getDb();
+exports.getAllProducts = (request, res) => {
+    const database = database_.getDb();
 
     database.all('SELECT * FROM products', [], async function (error, products) {
         if (error) {
@@ -11,15 +11,14 @@ exports.getAllProducts = (req, res) => {
 
         const productsWithDetails = [];
 
-        for (let i = 0; i < products.length; i++) {
-            const product = products[i];
+        for (const product of products) {
 
             await new Promise((resolve) => {
                 database.get(
                     'SELECT COUNT(*) as total FROM products WHERE price <= ?',
                     [product.price],
-                    (err, result) => {
-                        if (!err) {
+                    (error_, result) => {
+                        if (!error_) {
                             product.cheaperCount = result.total;
                         }
                         resolve();
@@ -31,8 +30,8 @@ exports.getAllProducts = (req, res) => {
                 database.get(
                     'SELECT AVG(price) as avg FROM products',
                     [],
-                    (err, result) => {
-                        if (!err) {
+                    (error_, result) => {
+                        if (!error_) {
                             product.avgPrice = result.avg;
                         }
                         resolve();
@@ -44,22 +43,22 @@ exports.getAllProducts = (req, res) => {
         }
 
         res.json({
-            "message": "success",
-            "data": productsWithDetails
+            "data": productsWithDetails,
+            "message": "success"
         });
     });
 };
 
-exports.createProduct = (req, res) => {
-    const {name, price, stock} = req.body;
-    const database = db.getDb();
+exports.createProduct = (request, res) => {
+    const {name, price, stock} = request.body;
+    const database = database_.getDb();
 
     database.run(
         `INSERT INTO products (name, price, stock) VALUES (?, ?, ?)`,
         [name, price, stock],
-        function(err) {
-            if (err) {
-                console.error(err);
+        function(error) {
+            if (error) {
+                console.error(error);
                 return res.status(500).json({error: 'Error creating product'});
             }
             res.status(201).json({
@@ -72,9 +71,9 @@ exports.createProduct = (req, res) => {
     );
 };
 
-exports.getProduct = (req, res) => {
-    const id = req.params.id;
-    const database = db.getDb();
+exports.getProduct = (request, res) => {
+    const id = request.params.id;
+    const database = database_.getDb();
 
     database.get(
         'SELECT * FROM products WHERE id = ?',
@@ -85,23 +84,23 @@ exports.getProduct = (req, res) => {
                 return;
             }
             res.json({
-                "message":"success",
-                "data":result
+                "data":result,
+                "message":"success"
             });
         }
     );
 };
 
-exports.updateStock = (req, res) => {
-    const { id } = req.params;
-    const { stock } = req.body;
-    const database = db.getDb();
+exports.updateStock = (request, res) => {
+    const { id } = request.params;
+    const { stock } = request.body;
+    const database = database_.getDb();
 
     database.run(
         `UPDATE products SET stock = ? WHERE id = ?`,
         [stock, id],
-        function(err) {
-            if (err) {
+        function(error) {
+            if (error) {
                 return res.status(500).json({error: 'Failed to update stock'});
             }
             if (this.changes === 0) {

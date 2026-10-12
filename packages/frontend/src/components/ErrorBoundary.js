@@ -1,13 +1,13 @@
 import React from 'react'
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = { hasError: false, error: null }
+export default class ErrorBoundary extends React.Component {
+  constructor(properties) {
+    super(properties)
+    this.state = { error: null, hasError: false }
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true, error }
+    return { error, hasError: true }
   }
 
   componentDidCatch(error, errorInfo) {
@@ -18,28 +18,28 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div style={{
-          padding: '20px',
-          margin: '20px',
+          backgroundColor: '#ffebee',
           border: '1px solid #ff0000',
           borderRadius: '4px',
-          backgroundColor: '#ffebee'
+          margin: '20px',
+          padding: '20px'
         }}>
           <h2>Something went wrong!</h2>
           <pre style={{
-            whiteSpace: 'pre-wrap',
-            color: '#ff0000'
+            color: '#ff0000',
+            whiteSpace: 'pre-wrap'
           }}>
             {this.state.error && this.state.error.toString()}
           </pre>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => location.reload()}
             style={{
-              padding: '8px 16px',
               backgroundColor: '#f44336',
-              color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer'
+              color: 'white',
+              cursor: 'pointer',
+              padding: '8px 16px'
             }}
           >
             Reload Page
@@ -51,5 +51,3 @@ class ErrorBoundary extends React.Component {
     return this.props.children
   }
 }
-
-export default ErrorBoundary;

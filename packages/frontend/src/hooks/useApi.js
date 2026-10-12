@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
 import axios from 'axios'
+import { useCallback, useState } from 'react'
 
 export const useApi = () => {
   const [loading, setLoading] = useState(false)
@@ -21,26 +21,26 @@ export const useApi = () => {
       })
 
       return response.data
-    } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred')
-      throw err
+    } catch (error_) {
+      setError(error_.response?.data?.error || 'An error occurred')
+      throw error_
     } finally {
       setLoading(false)
     }
   }, [])
 
   const get = (url) => request({ method: 'GET', url })
-  const post = (url, data) => request({ method: 'POST', url, data })
-  const put = (url, data) => request({ method: 'PUT', url, data })
+  const post = (url, data) => request({ data, method: 'POST', url })
+  const put = (url, data) => request({ data, method: 'PUT', url })
   const del = (url) => request({ method: 'DELETE', url })
 
   return {
-    loading,
+    delete: del,
     error,
-    request,
     get,
+    loading,
     post,
     put,
-    delete: del
+    request
   }
 }
