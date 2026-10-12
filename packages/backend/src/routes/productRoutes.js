@@ -8,8 +8,8 @@ router.post('/products', auth, productController.createProduct);
 router.get('/products/:id', auth, productController.getProduct);
 router.patch('/products/:id/stock', auth, productController.updateStock);
 
-router.use((err, req, res, next) => {
-  console.error(err);
+router.use((error, request, res, next) => {
+  console.error(error);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
