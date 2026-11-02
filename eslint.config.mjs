@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
+import betterTailwind from "eslint-plugin-better-tailwindcss";
 import jsxA11y from "eslint-plugin-jsx-a11y-x";
 import pluginN from "eslint-plugin-n";
 import perfectionist from "eslint-plugin-perfectionist";
@@ -52,6 +53,20 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
     settings: { react: { version: "18" } }, // mets ta vraie version
+  },
+
+    // Tailwind : tri des classes et détection des erreurs
+  {
+    files: ["packages/frontend/**/*.{js,jsx}"],
+    plugins: { "better-tailwindcss": betterTailwind },
+    rules: {
+      ...betterTailwind.configs["recommended-error"].rules,
+    },
+    settings: {
+      "better-tailwindcss": {
+        tailwindConfig: "packages/frontend/tailwind.config.js",
+      },
+    },
   },
 
   // Globals Jest pour les tests et mocks
