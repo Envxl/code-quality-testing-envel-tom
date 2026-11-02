@@ -8,6 +8,8 @@ import 'moment/locale/fr';
 import 'moment/locale/es';
 import 'moment/locale/de';
 
+import './styles/index.css';
+
 globalThis._ = _;
 globalThis.moment = moment;
 

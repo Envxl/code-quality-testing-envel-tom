@@ -6,6 +6,7 @@ import AddProduct from './pages/AddProduct';
 import Login from './pages/Login';
 import ProductList from './pages/ProductList';
 import Register from './pages/Register';
+import TailwindTest from './pages/TailwindTest';
 import UserList from './pages/UserList';
 
 export default function App() {
@@ -47,6 +48,7 @@ export default function App() {
             }}>
                 {isAuthenticated && <Navigation onLogout={refreshAuth} />}
                 <Routes>
+                    <Route element={<TailwindTest />} path="/tailwind-test" />
                     <Route element={<Login onLogin={refreshAuth} />} path="/login" />
                     <Route element={<Register />} path="/register" />
                     <Route
