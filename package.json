@@ -15,7 +15,8 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "start:lighthouse": "npm run start --workspace=frontend",
-    "lighthouse": "lhci autorun"
+    "build:lighthouse": "npm run build --workspace=frontend && node scripts/serve-frontend.mjs",
+    "lighthouse": "lhci collect --config=lighthouserc.json && lhci assert --config=lighthouserc.json"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
