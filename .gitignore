@@ -1,4 +1,6 @@
 node_modules
-**/coverage/
+coverage
+packages/frontend/build/
+.lighthouseci/
 .DS_Store
 .prettierrc

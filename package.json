@@ -13,7 +13,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "start:lighthouse": "npm run start --workspace=frontend",
+    "build:lighthouse": "npm run build --workspace=frontend && node scripts/serve-frontend.mjs",
+    "lighthouse": "lhci collect --config=lighthouserc.json && lhci assert --config=lighthouserc.json"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -29,7 +32,8 @@
     "globals": "^17.13.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.9.9"
+    "prettier": "^3.9.9",
+    "@lhci/cli": "^0.15.1"
   },
   "overrides": {
     "eslint-plugin-react": {

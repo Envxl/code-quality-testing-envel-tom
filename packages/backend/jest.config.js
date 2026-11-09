@@ -1,14 +1,12 @@
-/** @type {import('jest').Config} */
+/**
+@type {import('jest').Config}
+*/
 module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   collectCoverage: true,
-  collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/server.js',
-    '!src/db/migrations/**'
-  ],
+  collectCoverageFrom: ['src/**/*.js', '!src/server.js', '!src/db/migrations/**'],
   coverageDirectory: '<rootDir>/coverage',
   coverageReporters: ['text', 'lcov'],
   coverageThreshold: {
