@@ -1,13 +1,14 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+
+import Navigation from './components/Navigation';
+import AddProduct from './pages/AddProduct';
 import Login from './pages/Login';
+import ProductList from './pages/ProductList';
 import Register from './pages/Register';
 import UserList from './pages/UserList';
-import ProductList from './pages/ProductList';
-import AddProduct from './pages/AddProduct';
-import Navigation from './components/Navigation';
 
-function App() {
+export default function App() {
     const [isAuthenticated, setIsAuthenticated] = React.useState(
         !!localStorage.getItem('token')
     );
@@ -17,8 +18,8 @@ function App() {
             setIsAuthenticated(!!localStorage.getItem('token'));
         };
 
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        globalThis.addEventListener('storage', handleStorageChange);
+        return () => globalThis.removeEventListener('storage', handleStorageChange);
     }, []);
 
     const theme = {
@@ -31,53 +32,51 @@ function App() {
     }, []);
 
     const routes = [
-        { path: '/login', element: <Login /> },
-        { path: '/register', element: <Register /> },
-        { path: '/users', element: <UserList /> },
-        { path: '/products', element: <ProductList /> },
-        { path: '/add-product', element: <AddProduct /> }
+        { element: <Login />, path: '/login' },
+        { element: <Register />, path: '/register' },
+        { element: <UserList />, path: '/users' },
+        { element: <ProductList />, path: '/products' },
+        { element: <AddProduct />, path: '/add-product' }
     ];
 
     return (
         <BrowserRouter>
             <div className="app-container" style={{
-                padding: '20px',
-                backgroundColor: theme.secondary
+                backgroundColor: theme.secondary,
+                padding: '20px'
             }}>
                 {isAuthenticated && <Navigation onLogout={refreshAuth} />}
                 <Routes>
-                    <Route path="/login" element={<Login onLogin={refreshAuth} />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route element={<Login onLogin={refreshAuth} />} path="/login" />
+                    <Route element={<Register />} path="/register" />
                     <Route
-                        path="/users"
                         element={
                                 <UserList />
                         }
+                        path="/users"
                     />
                     <Route
-                        path="/products"
                         element={
                                 <ProductList />
                         }
+                        path="/products"
                     />
                     <Route
-                        path="/add-product"
                         element={
                                 <AddProduct />
                         }
+                        path="/add-product"
                     />
                     <Route
-                        path="/"
                         element={
                             isAuthenticated ?
-                                <Navigate to="/products" replace /> :
-                                <Navigate to="/login" replace />
+                                <Navigate replace to="/products" /> :
+                                <Navigate replace to="/login" />
                         }
+                        path="/"
                     />
                 </Routes>
             </div>
         </BrowserRouter>
     );
 }
-
-export default App;

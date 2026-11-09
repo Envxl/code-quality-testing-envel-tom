@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const useAuth = () => {
@@ -21,8 +21,8 @@ export const useAuth = () => {
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(userData))
       setUser(userData)
-    } catch (err) {
-      console.error('Failed to save auth data:', err)
+    } catch (error) {
+      console.error('Failed to save auth data:', error)
     }
   }
 
@@ -33,7 +33,7 @@ export const useAuth = () => {
     navigate('/login')
   }
 
-  return { user, loading, login, logout }
+  return { loading, login, logout, user }
 }
 
 

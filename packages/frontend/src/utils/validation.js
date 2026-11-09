@@ -12,8 +12,8 @@ export const validatePassword = (password) => {
   if (!/[0-9]/.test(password)) errors.push('Password must contain number')
 
   return {
-    isValid: errors.length === 0,
-    errors
+    errors,
+    isValid: errors.length === 0
   }
 }
 
@@ -35,32 +35,32 @@ export const validateUser = (user) => {
   }
 
   return {
-    isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
+    isValid: Object.keys(errors).length === 0
   }
 }
 
 export const validateProduct = (product) => {
-  let valid = true
+  let isValid = true
   let errors = {}
 
   if (!product.name || product.name.trim() === '') {
-    valid = false
+    isValid = false
     errors.name = 'Name is required'
   }
 
   if (!product.price || isNaN(product.price)) {
-    valid = false
+    isValid = false
     errors.price = 'Valid price is required'
   }
 
   if (product.price < 0) {
-    valid = false
+    isValid = false
     errors.price = 'Price must be positive'
   }
 
   if (!product.stock || isNaN(product.stock)) {
-    valid = false
+    isValid = false
     errors.stock = ['Stock must be a number']
   }
 
@@ -69,6 +69,6 @@ export const validateProduct = (product) => {
     errors.stock.push('Stock cannot be negative')
   }
 
-  return { valid, errors }
+  return { errors, valid: isValid }
 }
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import { getProducts } from '../services/api';
 
 const ProductList = () => {
@@ -15,14 +16,14 @@ const ProductList = () => {
         const data = await getProducts()
         const processedData = data.map(item => ({
           ...item,
-          searchableText: `${item.name.toLowerCase()} ${item.price} ${item.stock}`,
           priceCategory: item.price < 50 ? 'cheap' : item.price < 100 ? 'medium' : 'expensive',
+          searchableText: `${item.name.toLowerCase()} ${item.price} ${item.stock}`,
           stockStatus: item.stock === 0 ? 'out' : item.stock < 10 ? 'low' : 'available'
         }))
         setProducts(processedData)
-      } catch (err) {
+      } catch (error_) {
         setError('Failed to load products')
-        console.error(err)
+        console.error(error_)
       }
     }
     fetchProducts()
@@ -42,26 +43,26 @@ const ProductList = () => {
           const normalizedSearch = searchWord.toLowerCase().trim()
 
           // Levenshtein distance calculation for fuzzy matching
-          const distance = Array(normalizedWord.length + 1).fill(null).map(() =>
-            Array(normalizedSearch.length + 1).fill(null)
+          const distance = new Array(normalizedWord.length + 1).fill(null).map(() =>
+            new Array(normalizedSearch.length + 1).fill(null)
           )
 
-          for (let i = 0; i <= normalizedWord.length; i++) {
-            distance[i][0] = i
+          for (let index = 0; index <= normalizedWord.length; index++) {
+            distance[index][0] = index
           }
 
-          for (let j = 0; j <= normalizedSearch.length; j++) {
-            distance[0][j] = j
+          for (let index = 0; index <= normalizedSearch.length; index++) {
+            distance[0][index] = index
           }
 
-          for (let i = 1; i <= normalizedWord.length; i++) {
-            for (let j = 1; j <= normalizedSearch.length; j++) {
-              const cost = normalizedWord[i - 1] === normalizedSearch[j - 1] ? 0 : 1
+          for (let index = 1; index <= normalizedWord.length; index++) {
+            for (let index_ = 1; index_ <= normalizedSearch.length; index_++) {
+              const cost = normalizedWord[index - 1] === normalizedSearch[index_ - 1] ? 0 : 1
 
-              distance[i][j] = Math.min(
-                distance[i - 1][j] + 1,
-                distance[i][j - 1] + 1,
-                distance[i - 1][j - 1] + cost
+              distance[index][index_] = Math.min(
+                distance[index - 1][index_] + 1,
+                distance[index][index_ - 1] + 1,
+                distance[index - 1][index_ - 1] + cost
               )
             }
           }
@@ -75,33 +76,41 @@ const ProductList = () => {
     const priceFiltered = searchFiltered.filter(product => {
       if (!priceFilter) return true
 
-      const price = parseFloat(product.price)
+      const price = Number.parseFloat(product.price)
       switch(priceFilter) {
-        case 'low':
-          return price < 50 && product.priceCategory === 'cheap'
-        case 'medium':
-          return price >= 50 && price < 100 && product.priceCategory === 'medium'
-        case 'high':
+        case 'high': {
           return price >= 100 && product.priceCategory === 'expensive'
-        default:
+        }
+        case 'low': {
+          return price < 50 && product.priceCategory === 'cheap'
+        }
+        case 'medium': {
+          return price >= 50 && price < 100 && product.priceCategory === 'medium'
+        }
+        default: {
           return true
+        }
       }
     })
 
     return priceFiltered.filter(product => {
       if (!stockFilter) return true
 
-      const stockNum = parseInt(product.stock)
+      const stockNumber = parseInt(product.stock)
 
       switch(stockFilter) {
-        case 'out':
-          return stockNum === 0 && product.stockStatus === 'out'
-        case 'low':
-          return stockNum > 0 && stockNum < 10 && product.stockStatus === 'low'
-        case 'available':
-          return stockNum >= 10 && product.stockStatus === 'available'
-        default:
+        case 'available': {
+          return stockNumber >= 10 && product.stockStatus === 'available'
+        }
+        case 'low': {
+          return stockNumber > 0 && stockNumber < 10 && product.stockStatus === 'low'
+        }
+        case 'out': {
+          return stockNumber === 0 && product.stockStatus === 'out'
+        }
+        default: {
           return true
+        }
       }
     })
   }, [products, searchTerm, priceFilter, stockFilter])
@@ -109,20 +118,20 @@ const ProductList = () => {
   return (
     <div style={{padding: '20px'}}>
       <div style={{
+        alignItems: 'center',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
         marginBottom: '20px'
       }}>
         <h2>Products</h2>
         <Link to="/add-product">
           <button style={{
-            padding: '10px 20px',
             backgroundColor: '#4CAF50',
-            color: 'white',
             border: 'none',
             borderRadius: '4px',
-            cursor: 'pointer'
+            color: 'white',
+            cursor: 'pointer',
+            padding: '10px 20px'
           }}>
             Add Product
           </button>
@@ -135,26 +144,26 @@ const ProductList = () => {
         marginBottom: '20px'
       }}>
         <input
-          type="text"
-          placeholder="Search products..."
-          value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search products..."
           style={{
-            padding: '8px',
-            borderRadius: '4px',
             border: '1px solid #ddd',
-            flex: 1
+            borderRadius: '4px',
+            flex: 1,
+            padding: '8px'
           }}
+          type="text"
+          value={searchTerm}
         />
 
         <select
-          value={priceFilter}
           onChange={(e) => setPriceFilter(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
+          value={priceFilter}
         >
           <option value="">All Prices</option>
           <option value="low">Low (&lt; $50)</option>
@@ -163,13 +172,13 @@ const ProductList = () => {
         </select>
 
         <select
-          value={stockFilter}
           onChange={(e) => setStockFilter(e.target.value)}
           style={{
-            padding: '8px',
+            border: '1px solid #ddd',
             borderRadius: '4px',
-            border: '1px solid #ddd'
+            padding: '8px'
           }}
+          value={stockFilter}
         >
           <option value="">All Stock</option>
           <option value="out">Out of Stock</option>
@@ -179,35 +188,35 @@ const ProductList = () => {
       </div>
 
       {error && <div style={{
-        color: 'red',
-        padding: '10px',
         backgroundColor: '#ffebee',
+        borderRadius: '4px',
+        color: 'red',
         marginBottom: '20px',
-        borderRadius: '4px'
+        padding: '10px'
       }}>{error}</div>}
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-        gap: '20px'
+        gap: '20px',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))'
       }}>
         {filteredProducts.map(product => (
           <div
             key={product.id}
             style={{
+              backgroundColor: 'white',
               border: '1px solid #ddd',
               borderRadius: '8px',
-              padding: '15px',
-              backgroundColor: 'white'
+              padding: '15px'
             }}
           >
             <h3 style={{margin: '0 0 10px 0'}}>{product.name}</h3>
-            <p style={{margin: '5px 0', color: '#666'}}>
+            <p style={{color: '#666', margin: '5px 0'}}>
               Price: ${product.price}
             </p>
             <p style={{
-              margin: '5px 0',
-              color: product.stock > 0 ? '#4CAF50' : '#f44336'
+              color: product.stock > 0 ? '#4CAF50' : '#f44336',
+              margin: '5px 0'
             }}>
               Stock: {product.stock}
             </p>
@@ -216,7 +225,7 @@ const ProductList = () => {
       </div>
 
       {filteredProducts.length === 0 && (
-        <p style={{textAlign: 'center', color: '#666'}}>
+        <p style={{color: '#666', textAlign: 'center'}}>
           No products found matching your criteria
         </p>
       )}

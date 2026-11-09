@@ -1,6 +1,5 @@
 node_modules
 coverage
 .lighthouseci/
-*.report.html
 .DS_Store
 .prettierrc

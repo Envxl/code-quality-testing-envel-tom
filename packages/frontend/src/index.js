@@ -1,41 +1,42 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
 import _ from 'lodash';
 import moment from 'moment';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+import App from './App';
 import 'moment/locale/fr';
 import 'moment/locale/es';
 import 'moment/locale/de';
 
-window._ = _;
-window.moment = moment;
+globalThis._ = _;
+globalThis.moment = moment;
 
 console.log('Lodash version:', _.VERSION);
 console.log('Moment loaded with locales:', moment.locales());
 
-window.onerror = function(message, source, lineno, colno, error) {
-  console.error('Global error:', { message, source, lineno, colno, error });
+globalThis.onerror = function(message, source, lineno, colno, error) {
+  console.error('Global error:', { colno, error, lineno, message, source });
   return false;
 };
 
-window.onunhandledrejection = function(event) {
+globalThis.onunhandledrejection = function(event) {
   console.error('Unhandled promise rejection:', event.reason);
 };
 
 const startTime = performance.now();
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDevelopment = process.env.NODE_ENV === 'development';
 
-const root = document.getElementById('root');
+const root = document.querySelector('#root');
 
 if (!root) {
   throw new Error('Failed to find root element');
 }
 
-window.APP_VERSION = '1.0.0';
-window.DEBUG = isDev;
+globalThis.APP_VERSION = '1.0.0';
+globalThis.DEBUG = isDevelopment;
 
-window.API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+globalThis.API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
 const renderApp = () => {
   try {
@@ -45,7 +46,7 @@ const renderApp = () => {
         <App />
     );
 
-    if (isDev) {
+    if (isDevelopment) {
       const endTime = performance.now();
       console.log(`App rendered in ${endTime - startTime}ms`);
     }
@@ -80,11 +81,11 @@ window.addEventListener('unload', () => {
   console.log('App cleanup');
 });
 
-window.addEventListener('error', (event) => {
+globalThis.addEventListener('error', (event) => {
   console.error('Runtime error:', event.error);
 });
 
-if (isDev) {
+if (isDevelopment) {
   const reportWebVitals = (metric) => {
     console.log(metric);
   };

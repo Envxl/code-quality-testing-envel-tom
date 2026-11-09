@@ -1,10 +1,10 @@
-module.exports = {
+export default {
   ci: {
     collect: {
       startServerCommand: 'npm run start:lighthouse',
       startServerReadyPattern: 'webpack compiled successfully',
       url: ['http://localhost:3000'],
-      numberOfRuns: 3,
+      numberOfRuns: 3
     },
 
     assert: {
@@ -12,8 +12,8 @@ module.exports = {
         'categories:performance': ['error', { minScore: 0.8 }],
         'categories:accessibility': ['error', { minScore: 1 }],
         'categories:best-practices': ['error', { minScore: 0.9 }],
-        'categories:seo': ['error', { minScore: 0.8 }],
-      },
-    },
-  },
+        'categories:seo': ['error', { minScore: 0.8 }]
+      }
+    }
+  }
 };
